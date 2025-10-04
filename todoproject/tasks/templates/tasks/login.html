@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container">
     <div class="form-container">
-        <h2>Login</h2>
+        <h2>Welcome Back!</h2>
         <form method="POST" novalidate>
             {% csrf_token %}
 
@@ -28,6 +28,12 @@
             {% if form.non_field_errors %}
                 <div class="error-message">{{ form.non_field_errors.0 }}</div>
             {% endif %}
+
+            <div style="text-align: right; margin-bottom: 1rem;">
+                <a href="{% url 'password_reset_request' %}" style="color: #4f46e5; font-size: 0.9rem;">
+                    Forgot password?
+                </a>
+            </div>
 
             <button type="submit" class="btn btn-primary btn-block">Login</button>
         </form>

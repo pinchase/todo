@@ -4,6 +4,22 @@
 
 {% block content %}
 <div class="container">
+    <!-- Email Verification Banner -->
+    {% if not is_email_verified %}
+    <div class="verification-banner">
+        <div class="verification-content">
+            <span class="verification-icon">⚠️</span>
+            <div class="verification-text">
+                <strong>Email not verified!</strong>
+                <p>Please check your inbox and verify your email to unlock all features.</p>
+            </div>
+            <a href="{% url 'resend_verification' %}" class="btn-resend">
+                📧 Resend Email
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
     <div class="dashboard-header">
         <h1>My Tasks</h1>
         <a href="{% url 'add_task' %}" class="btn btn-primary">+ Add New Task</a>
@@ -15,7 +31,7 @@
             <p>Total Tasks</p>
         </div>
         <div class="stat-card">
-            <h3>{{ tasks|length|add:"-1"|add:"1" }}</h3>
+            <h3 id="pending-count">0</h3>
             <p>Pending</p>
         </div>
         <div class="stat-card completed">
@@ -64,4 +80,16 @@
         {% endif %}
     </div>
 </div>
+
+<script>
+    // Update counters
+    document.addEventListener('DOMContentLoaded', function() {
+        const totalTasks = {{ tasks.count }};
+        const completedTasks = document.querySelectorAll('input[type="checkbox"]:checked').length;
+        const pendingTasks = totalTasks - completedTasks;
+
+        document.getElementById('completed-count').textContent = completedTasks;
+        document.getElementById('pending-count').textContent = pendingTasks;
+    });
+</script>
 {% endblock %}

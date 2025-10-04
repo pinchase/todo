@@ -5,12 +5,16 @@
 {% block content %}
 <div class="container">
     <div class="form-container">
-        <h2>Create Account</h2>
+        <h2>Create Your Account</h2>
+        <p style="text-align: center; color: #64748b; margin-bottom: 2rem;">
+            Join thousands of productive users!
+        </p>
+
         <form method="POST" novalidate>
             {% csrf_token %}
 
             <div class="form-group">
-                <label for="id_username">Username:</label>
+                <label for="id_username">Username <span class="required">*</span></label>
                 {{ form.username }}
                 {% if form.username.errors %}
                     <div class="error-message">{{ form.username.errors.0 }}</div>
@@ -18,26 +22,39 @@
             </div>
 
             <div class="form-group">
-                <label for="id_password1">Password:</label>
+                <label for="id_email">Email Address <span class="required">*</span></label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="error-message">{{ form.email.errors.0 }}</div>
+                {% endif %}
+                <small>We'll send you a verification email.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="id_password1">Password <span class="required">*</span></label>
                 {{ form.password1 }}
                 {% if form.password1.errors %}
                     <div class="error-message">{{ form.password1.errors.0 }}</div>
                 {% endif %}
-                <small>Your password must be at least 8 characters long.</small>
+                <small>Must be at least 8 characters long.</small>
             </div>
 
             <div class="form-group">
-                <label for="id_password2">Confirm Password:</label>
+                <label for="id_password2">Confirm Password <span class="required">*</span></label>
                 {{ form.password2 }}
                 {% if form.password2.errors %}
                     <div class="error-message">{{ form.password2.errors.0 }}</div>
                 {% endif %}
             </div>
 
-            <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+            <button type="submit" class="btn btn-primary btn-block">
+                📧 Sign Up & Verify Email
+            </button>
         </form>
 
-        <p class="form-footer">Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+        <p class="form-footer">
+            Already have an account? <a href="{% url 'login' %}">Login here</a>
+        </p>
     </div>
 </div>
 {% endblock %}
