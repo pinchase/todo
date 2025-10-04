@@ -136,5 +136,23 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@todoapp.com')
 
+
+
 # Base URL for email links (change in production)
+SITE_URL = config('SITE_URL', default='http://127.0.0.1:8000')
+
+
+# Email Configuration - Resend
+RESEND_API_KEY = config('RESEND_API_KEY', default='')
+
+if RESEND_API_KEY:
+    # Use Resend backend
+    EMAIL_BACKEND = 'tasks.email_backend.ResendBackend'
+    DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='onboarding@resend.dev')
+else:
+    # Fallback to console for local testing
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    DEFAULT_FROM_EMAIL = 'noreply@todoapp.com'
+
+# Base URL for email links
 SITE_URL = config('SITE_URL', default='http://127.0.0.1:8000')
