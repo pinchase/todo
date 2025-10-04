@@ -1,34 +1,38 @@
-# 📝 Fullstack To-Do List Web Application (Django + HTML, CSS, JS)
+# 📝 Fullstack To‑Do List Web App (Django + HTML/CSS/JS)
 
-A simple **fullstack To-Do List application** built with **Django (backend)** and **HTML, CSS, JavaScript (frontend)**.  
+Lightweight to‑do app with Django backend and a minimal HTML/CSS/JS frontend. Authenticated users can manage their own tasks.
 
+## 🎯 Features
+- Sign up, login, logout
+- Dashboard for logged‑in users
+- Tasks: add, edit, mark complete/incomplete, delete
+- Flash messages and responsive UI
 
-## 🎯 Project Overview
+## 🧰 Tech Stack
+- Backend: Django (Python, Django ORM)
+- Frontend: HTML, CSS, Vanilla JS
+- Database: MySQL (local via .env) or any DB via DATABASE_URL
 
-### Core Features
-- User Authentication (Sign up, Login, Logout)
-- Dashboard for logged-in users
-- CRUD Operations on tasks:
-  - Add new tasks
-  - Edit tasks
-  - Mark as completed/uncompleted
-  - Delete tasks
-- Tasks are stored in the database and tied to the logged-in user
-- Responsive UI with clean minimal design
-- Flash messages for success/error
-- Navigation bar with “Home” & “My Tasks”
+## 🚀 Setup
+From the repository root:
 
-### Tech Stack
-- **Backend**: Django (Python, Django ORM)
-- **Frontend**: HTML, CSS, Vanilla JavaScript
-- **Database**: SQLite (default, for simplicity)
-
----
-
-## 📦 Setup
 ```bash
-git clone https://github.com/pinchase/todo.git
-cd todo
+# 1) Create and activate a virtual environment
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# 2) Install dependencies
+cd todoproject
 pip install -r requirements.txt
+
+
+# 3) Apply migrations and run
 python manage.py migrate
 python manage.py runserver
+```
+
+Optional:
+- Create admin user: `python manage.py createsuperuser`
+
+## 🔗 URLs
+- App: http://127.0.0.1:8000/
