@@ -131,12 +131,36 @@ def add_task_view(request):
     if request.method == 'POST':
         title = request.POST.get('title')
         description = request.POST.get('description', '')
+        priority = request.POST.get('priority', 'medium')
+        category = request.POST.get('category', 'other')
+        due_date = request.POST.get('due_date', '')
 
         if title:
-            Task.objects.create(user=request.user, title=title, description=description)
+            task_data = {
+                'user': request.user,
+                'title': title,
+                'description': description,
+                'priority': priority,
+                'category': category,
+            }
+
+            # Add due_date if provided
+            if due_date:
+                from django.utils.dateparse import parse_datetime
+                parsed_date = parse_datetime(due_date)
+                if parsed_date:
+                    task_data['due_date'] = parsed_date
+
+            Task.objects.create(**task_data)
             messages.success(request, 'Task added successfully!')
             return redirect('dashboard')
-    return render(request, 'tasks/add_task.html')
+
+        # Pass choices to template
+    context = {
+        'priority_choices': Task.PRIORITY_CHOICES,
+        'category_choices': Task.CATEGORY_CHOICES,
+    }
+    return render(request, 'tasks/add_task.html', context)
 
 
 # Edit Task
@@ -147,12 +171,30 @@ def edit_task_view(request, task_id):
     if request.method == 'POST':
         task.title = request.POST.get('title')
         task.description = request.POST.get('description', '')
+        task.priority = request.POST.get('priority', 'medium')
+        task.category = request.POST.get('category', 'other')
+        due_date = request.POST.get('due_date', '')
+
+        # Update due_date
+        if due_date:
+            from django.utils.dateparse import parse_datetime
+            parsed_date = parse_datetime(due_date)
+            if parsed_date:
+                task.due_date = parsed_date
+        else:
+            task.due_date = None
+
         task.save()
         messages.success(request, 'Task updated successfully!')
         return redirect('dashboard')
 
-    return render(request, 'tasks/edit_task.html', {'task': task})
-
+        # Pass choices and task to template
+    context = {
+        'task': task,
+        'priority_choices': Task.PRIORITY_CHOICES,
+        'category_choices': Task.CATEGORY_CHOICES,
+    }
+    return render(request, 'tasks/edit_task.html', context)
 
 # Delete Task
 @login_required

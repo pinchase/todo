@@ -558,3 +558,290 @@ textarea:focus {
         width: 100%;
     }
 }
+/* Form Row for Side-by-Side Inputs */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 600px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Priority Badges */
+.priority-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.priority-low {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.priority-medium {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.priority-high {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.priority-urgent {
+    background: #dc2626;
+    color: white;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Category Badges */
+.category-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.category-work {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.category-personal {
+    background: #fce7f3;
+    color: #9f1239;
+}
+
+.category-shopping {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.category-health {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.category-finance {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.category-education {
+    background: #fae8ff;
+    color: #86198f;
+}
+
+.category-other {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+/* Task Header with Badges */
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+    gap: 1rem;
+}
+
+.task-badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+/* Task Meta Information */
+.task-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.due-date {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.due-date.overdue {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+/* Stats Card for Overdue */
+.stat-card.overdue {
+    border-left-color: #ef4444;
+}
+
+.stat-card.overdue h3 {
+    color: #ef4444;
+}
+
+/* Filter Section */
+.filter-section {
+    background: var(--card-background);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.filter-group:last-child {
+    margin-bottom: 0;
+}
+
+.filter-group label {
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 70px;
+}
+
+.filter-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--border-color);
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    color: var(--text-secondary);
+}
+
+.filter-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.filter-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Priority-specific filter buttons */
+.filter-btn.priority-low.active {
+    background: #10b981;
+    border-color: #10b981;
+}
+
+.filter-btn.priority-medium.active {
+    background: #f59e0b;
+    border-color: #f59e0b;
+}
+
+.filter-btn.priority-high.active {
+    background: #ef4444;
+    border-color: #ef4444;
+}
+
+.filter-btn.priority-urgent.active {
+    background: #dc2626;
+    border-color: #dc2626;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .task-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .task-badges {
+        order: -1;
+        margin-bottom: 0.5rem;
+    }
+
+    .filter-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filter-group label {
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Select Dropdown Styling */
+select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 12px;
+    padding-right: 2.5rem;
+}
+
+/* Datetime Input Styling */
+input[type="datetime-local"] {
+    padding-right: 0.75rem;
+}
+
+/* Base task card */
+.task-card {
+    background: #f9f9f9;
+    border-left: 5px solid transparent;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.3s;
+}
+
+/* Completed tasks (greenish) */
+.task-card.completed {
+    background: #eaf7ea;
+    border-left-color: #28a745;
+    opacity: 0.9;
+}
+
+/* Overdue tasks (danger / red) */
+.task-card.overdue {
+    background: #fdecea;
+    border-left-color: #dc3545;
+    box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+}
+
+/* Text in overdue card */
+.task-card.overdue .task-title,
+.task-card.overdue .due-date {
+    color: #dc3545;
+    font-weight: bold;
+}

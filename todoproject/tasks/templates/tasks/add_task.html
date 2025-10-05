@@ -29,6 +29,39 @@
                           placeholder="Add more details about your task..."></textarea>
             </div>
 
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="priority">Priority</label>
+                    <select id="priority" name="priority" class="form-control">
+                        {% for value, label in priority_choices %}
+                        <option value="{{ value }}" {% if value == 'medium' %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" name="category" class="form-control">
+                        {% for value, label in category_choices %}
+                        <option value="{{ value }}" {% if value == 'other' %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="due_date">Due Date (Optional)</label>
+                <input type="datetime-local"
+                       id="due_date"
+                       name="due_date"
+                       class="form-control">
+                <small>Set a deadline for this task</small>
+            </div>
+
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Add Task</button>
                 <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancel</a>

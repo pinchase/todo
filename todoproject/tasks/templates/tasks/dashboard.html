@@ -4,6 +4,21 @@
 
 {% block content %}
 <div class="container">
+    <!-- Email Verification Banner -->
+{#    {% if not is_email_verified %}#}
+{#    <div class="verification-banner">#}
+{#        <div class="verification-content">#}
+{#            <span class="verification-icon">⚠️</span>#}
+{#            <div class="verification-text">#}
+{#                <strong>Email not verified!</strong>#}
+{#                <p>Please check your inbox and verify your email to unlock all features.</p>#}
+{#            </div>#}
+{#            <a href="{% url 'resend_verification' %}" class="btn-resend">#}
+{#                📧 Resend Email#}
+{#            </a>#}
+{#        </div>#}
+{#    </div>#}
+{#    {% endif %}#}
 <!-- Email Verification Banner -->
 {% if not is_email_verified %}
 <div class="verification-banner">
@@ -23,9 +38,10 @@
         <a href="{% url 'add_task' %}" class="btn btn-primary">+ Add New Task</a>
     </div>
 
+    <!-- Task Statistics -->
     <div class="tasks-stats">
         <div class="stat-card">
-            <h3>{{ tasks.count }}</h3>
+            <h3 id="total-count">{{ tasks.count }}</h3>
             <p>Total Tasks</p>
         </div>
         <div class="stat-card">
@@ -36,13 +52,45 @@
             <h3 id="completed-count">0</h3>
             <p>Completed</p>
         </div>
+        <div class="stat-card overdue">
+            <h3 id="overdue-count">0</h3>
+            <p>Overdue</p>
+        </div>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div class="filter-section">
+        <div class="filter-group">
+            <label>Priority:</label>
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn priority-low" data-filter="low">Low</button>
+            <button class="filter-btn priority-medium" data-filter="medium">Medium</button>
+            <button class="filter-btn priority-high" data-filter="high">High</button>
+            <button class="filter-btn priority-urgent" data-filter="urgent">Urgent</button>
+        </div>
+
+        <div class="filter-group">
+            <label>Status:</label>
+            <button class="filter-btn active" data-filter-status="all">All</button>
+            <button class="filter-btn" data-filter-status="active">Active</button>
+            <button class="filter-btn" data-filter-status="completed">Completed</button>
+            <button class="filter-btn" data-filter-status="overdue">Overdue</button>
+        </div>
     </div>
 
     <div class="tasks-container">
         {% if tasks %}
             <div class="tasks-list" id="tasksList">
                 {% for task in tasks %}
-                <div class="task-card {% if task.completed %}completed{% endif %}" data-task-id="{{ task.id }}">
+                <div class="task-card
+                            {% if task.completed %}completed
+                            {% elif task.is_overdue and not task.completed %}overdue
+                            {% endif %}"
+                     data-task-id="{{ task.id }}"
+                     data-priority="{{ task.priority }}"
+                     data-category="{{ task.category }}"
+                     data-status="{% if task.completed %}completed{% elif task.is_overdue %}overdue{% else %}active{% endif %}">
+
                     <div class="task-content">
                         <div class="task-checkbox">
                             <input type="checkbox"
@@ -50,21 +98,43 @@
                                    {% if task.completed %}checked{% endif %}
                                    onchange="toggleTask({{ task.id }})">
                         </div>
+
                         <div class="task-details">
-                            <h3 class="task-title">{{ task.title }}</h3>
+                            <div class="task-header">
+                                <h3 class="task-title">{{ task.title }}</h3>
+                                <div class="task-badges">
+                                    <span class="priority-badge priority-{{ task.priority }}">
+                                        {{ task.get_priority_display }}
+                                    </span>
+                                    <span class="category-badge category-{{ task.category }}">
+                                        {{ task.get_category_display }}
+                                    </span>
+                                </div>
+                            </div>
+
                             {% if task.description %}
                                 <p class="task-description">{{ task.description }}</p>
                             {% endif %}
-                            <span class="task-date">Created: {{ task.created_at|date:"M d, Y" }}</span>
+
+                            <div class="task-meta">
+                                <span class="task-date">Created: {{ task.created_at|date:"M d, Y g:i A" }}</span>
+
+                                {% if task.due_date %}
+                                    <span class="due-date {% if task.is_overdue and not task.completed %}overdue{% endif %}">
+                                        {% if task.is_overdue and not task.completed %}
+                                            ⚠️ Overdue: {{ task.due_date|date:"M d, Y g:i A" }}
+                                        {% else %}
+                                            📅 Due: {{ task.due_date|date:"M d, Y g:i A" }}
+                                        {% endif %}
+                                    </span>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
+
                     <div class="task-actions">
-                        <a href="{% url 'edit_task' task.id %}" class="btn-icon" title="Edit">
-                            ✏️
-                        </a>
-                        <button onclick="deleteTask({{ task.id }})" class="btn-icon" title="Delete">
-                            🗑️
-                        </button>
+                        <a href="{% url 'edit_task' task.id %}" class="btn-icon" title="Edit">✏️</a>
+                        <button onclick="deleteTask({{ task.id }})" class="btn-icon" title="Delete">🗑️</button>
                     </div>
                 </div>
                 {% endfor %}
@@ -80,14 +150,70 @@
 </div>
 
 <script>
-    // Update counters
+    // Update counters on page load
     document.addEventListener('DOMContentLoaded', function() {
-        const totalTasks = {{ tasks.count }};
-        const completedTasks = document.querySelectorAll('input[type="checkbox"]:checked').length;
-        const pendingTasks = totalTasks - completedTasks;
+        updateCounters();
+        setupFilters();
+    });
 
+    function updateCounters() {
+        const allTasks = document.querySelectorAll('.task-card');
+        const completedTasks = document.querySelectorAll('.task-card.completed').length;
+        const overdueTasks = document.querySelectorAll('.task-card.overdue').length;
+        const pendingTasks = allTasks.length - completedTasks - overdueTasks;
+
+        document.getElementById('total-count').textContent = allTasks.length;
         document.getElementById('completed-count').textContent = completedTasks;
         document.getElementById('pending-count').textContent = pendingTasks;
-    });
+        document.getElementById('overdue-count').textContent = overdueTasks;
+    }
+
+    function setupFilters() {
+        // Priority filter
+        document.querySelectorAll('[data-filter]').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                filterTasks(this.dataset.filter, null);
+            });
+        });
+
+        // Status filter
+        document.querySelectorAll('[data-filter-status]').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('[data-filter-status]').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                filterTasks(null, this.dataset.filterStatus);
+            });
+        });
+    }
+
+    function filterTasks(priorityFilter, statusFilter) {
+        const tasks = document.querySelectorAll('.task-card');
+        tasks.forEach(task => {
+            let showTask = true;
+            if (priorityFilter && priorityFilter !== 'all') {
+                showTask = showTask && task.dataset.priority === priorityFilter;
+            }
+            if (statusFilter && statusFilter !== 'all') {
+                showTask = showTask && task.dataset.status === statusFilter;
+            }
+            task.style.display = showTask ? 'flex' : 'none';
+        });
+    }
 </script>
+
+<style>
+/* Overdue task danger style */
+.task-card.overdue {
+    background: #fdecea;
+    border-left: 5px solid #dc3545;
+    box-shadow: 0 0 5px rgba(220, 53, 69, 0.4);
+}
+.task-card.overdue .task-title,
+.task-card.overdue .due-date {
+    color: #dc3545;
+    font-weight: bold;
+}
+</style>
 {% endblock %}

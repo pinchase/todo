@@ -6,6 +6,26 @@ import uuid
 
 
 class Task(models.Model):
+    PRIORITY_CHOICES = [
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
+        ('urgent', 'Urgent'),
+    ]
+
+    CATEGORY_CHOICES = [
+        ('personal', 'Personal'),
+        ('work', 'Work'),
+        ('school', 'School'),
+        ('shopping', 'Shopping'),
+        ('travel', 'Travel'),
+        ('health', 'Health'),
+        ('finance', 'Finance'),
+        ('other', 'Other'),
+    ]
+
+
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks')
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
@@ -13,12 +33,59 @@ class Task(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    priority = models.CharField(
+        max_length=10,
+        choices=PRIORITY_CHOICES,
+        default='medium',
+        help_text='Task Priority Level'
+    )
+    category = models.CharField(
+        max_length=20,
+        choices=CATEGORY_CHOICES,
+        default='other',
+        help_text='Task Category'
+    )
+
+    due_date = models.DateTimeField(null=True, blank=True, help_text='Due Date')
+
     def __str__(self):
         return self.title
 
+    @property
+    def is_overdue(self):
+        """Check if task is overdue"""
+        if self.due_date and not self.completed:
+            return self.due_date < timezone.now()
+        return False
+
+    @property
+    def due_status(self):
+        """Get human-readable due status"""
+        if not self.due_date:
+            return 'no_deadline'
+        if self.completed:
+            return 'completed'
+        if self.is_overdue:
+            return 'overdue'
+
+        time_left = self.due_date - timezone.now()
+        if time_left.days == 0:
+            return 'due_today'
+        elif time_left.days == 1:
+            return 'due_tomorrow'
+        elif time_left.days <= 7:
+            return 'due_this_week'
+        else:
+            return 'upcoming'
+
     class Meta:
         ordering = ['-created_at']
-
+        indexes = [
+            models.Index(fields=['user', 'completed']),
+            models.Index(fields=['user', 'priority']),
+            models.Index(fields=['user', 'category']),
+            models.Index(fields=['due_date']),
+        ]
 
 
 
