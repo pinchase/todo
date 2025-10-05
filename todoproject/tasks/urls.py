@@ -22,4 +22,6 @@ urlpatterns = [
     path('edit/<int:task_id>/', views.edit_task_view, name='edit_task'),
     path('delete/<int:task_id>/', views.delete_task_view, name='delete_task'),
     path('toggle/<int:task_id>/', views.toggle_task_view, name='toggle_task'),
+
+     path('test-email/', views.test_email_view, name='test_email'),
 ]

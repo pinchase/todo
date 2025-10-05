@@ -13,6 +13,10 @@ from django.conf import settings
 from .forms import CustomUserCreationForm
 from .utils import send_verification_email, send_welcome_email, send_password_reset_email
 
+
+from django.http import JsonResponse
+import resend
+
 # ---------------- AUTH VIEWS ---------------- #
 
 def verify_email_view(request, token):
@@ -223,5 +227,38 @@ def password_reset_confirm_view(request, uidb64, token):
         return redirect('password_reset_request')
 
 
+def test_email_view(request):
+    """Test if Resend works on production"""
+    try:
+        # Check if API key exists
+        api_key = getattr(settings, 'RESEND_API_KEY', None)
+        if not api_key:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'RESEND_API_KEY not found in settings'
+            })
 
+        # Try to send test email
+        resend.api_key = api_key
 
+        params = {
+            "from": settings.DEFAULT_FROM_EMAIL,
+            "to": ["your-email@gmail.com"],  # Replace with YOUR email
+            "subject": "Test from Production",
+            "html": "<p>This is a test email from production server</p>"
+        }
+
+        response = resend.Emails.send(params)
+
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Email sent!',
+            'response': str(response)
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e),
+            'type': type(e).__name__
+        })
