@@ -4,21 +4,19 @@
 
 {% block content %}
 <div class="container">
-    <!-- Email Verification Banner -->
-    {% if not is_email_verified %}
-    <div class="verification-banner">
-        <div class="verification-content">
-            <span class="verification-icon">⚠️</span>
-            <div class="verification-text">
-                <strong>Email not verified!</strong>
-                <p>Please check your inbox and verify your email to unlock all features.</p>
-            </div>
-            <a href="{% url 'resend_verification' %}" class="btn-resend">
-                📧 Resend Email
-            </a>
+<!-- Email Verification Banner -->
+{% if not is_email_verified %}
+<div class="verification-banner">
+    <div class="verification-content">
+        <span class="verification-icon">⚠️</span>
+        <div class="verification-text">
+            <strong>Email verification is not available yet.</strong>
+            <p>This feature will be enabled soon in your dashboard. For now, you can continue using the app without verification.</p>
         </div>
     </div>
-    {% endif %}
+</div>
+{% endif %}
+
 
     <div class="dashboard-header">
         <h1>My Tasks</h1>
