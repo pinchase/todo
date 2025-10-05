@@ -19,6 +19,25 @@
     --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
 }
+[data-theme="dark"] {
+    --primary-color: #6366f1;
+    --primary-hover: #4f46e5;
+    --secondary-color: #94a3b8;
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+    --background: #0f172a;
+    --card-background: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Smooth transition for theme changes */
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -844,4 +863,57 @@ input[type="datetime-local"] {
 .task-card.overdue .due-date {
     color: #dc3545;
     font-weight: bold;
+}
+/* Search Container */
+.search-container {
+    background: var(--card-background);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.search-input {
+    flex: 1;
+    padding: 0.875rem 1.25rem;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s;
+    background: var(--background);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.search-results-count {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    font-weight: 500;
+}
+/* Theme Toggle Button */
+.theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    font-size: 1.5rem;
+    transition: transform 0.3s;
+    display: flex;
+    align-items: center;
+}
+
+.theme-toggle:hover {
+    transform: rotate(20deg);
+}
+
+.theme-icon {
+    display: block;
 }

@@ -37,6 +37,15 @@
         <h1>My Tasks</h1>
         <a href="{% url 'add_task' %}" class="btn btn-primary">+ Add New Task</a>
     </div>
+<!-- Search Bar  -->
+    <div class="search-container">
+        <input type="text"
+               id="searchInput"
+               class="search-input"
+               placeholder="🔍 Search tasks by title or description..."
+               autocomplete="off">
+        <span id="searchResults" class="search-results-count"></span>
+    </div>
 
     <!-- Task Statistics -->
     <div class="tasks-stats">
@@ -201,19 +210,38 @@
             task.style.display = showTask ? 'flex' : 'none';
         });
     }
+    function setupSearch() {
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+
+        searchInput.addEventListener('input', function () {
+            const query = this.value.toLowerCase().trim();
+            const tasks = document.querySelectorAll('.task-card');
+            let visibleCount = 0;
+
+            tasks.forEach(task => {
+                const title = task.querySelector('.task-title').textContent.toLowerCase();
+                const description = task.querySelector('.task-description');
+                const descText = description ? description.textContent.toLowerCase() : '';
+
+                const matches = title.includes(query) || descText.includes(query);
+
+                if (query === '' || matches) {
+                    task.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    task.style.display = 'none';
+                }
+            });
+
+            // Update search results count
+            if (query) {
+                searchResults.textContent = `${visibleCount} task${visibleCount !== 1 ? 's' : ''} found`;
+            } else {
+                searchResults.textContent = '';
+            }
+        });
+    }
 </script>
 
-<style>
-/* Overdue task danger style */
-.task-card.overdue {
-    background: #fdecea;
-    border-left: 5px solid #dc3545;
-    box-shadow: 0 0 5px rgba(220, 53, 69, 0.4);
-}
-.task-card.overdue .task-title,
-.task-card.overdue .due-date {
-    color: #dc3545;
-    font-weight: bold;
-}
-</style>
 {% endblock %}
