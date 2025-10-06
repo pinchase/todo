@@ -24,4 +24,6 @@ urlpatterns = [
     path('toggle/<int:task_id>/', views.toggle_task_view, name='toggle_task'),
 
      path('test-email/', views.test_email_view, name='test_email'),
+
+    path('statistics/', views.statistics_view, name='statistics')
 ]

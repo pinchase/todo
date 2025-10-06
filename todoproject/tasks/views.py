@@ -10,12 +10,16 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.urls import reverse
 from django.conf import settings
+from django.utils import timezone
 from .forms import CustomUserCreationForm
 from .utils import send_verification_email, send_welcome_email, send_password_reset_email
 
 
 from django.http import JsonResponse
 import resend
+from django.db.models import Count, Q
+from django.db.models.functions import TruncDate
+from datetime import datetime, timedelta
 
 # ---------------- AUTH VIEWS ---------------- #
 
@@ -304,3 +308,69 @@ def test_email_view(request):
             'message': str(e),
             'type': type(e).__name__
         })
+
+
+@login_required
+def statistics_view(request):
+    """Show detailed statistics and charts"""
+    user_tasks = Task.objects.filter(user=request.user)
+
+    # Overall stats
+    total_tasks = user_tasks.count()
+    completed_tasks = user_tasks.filter(completed=True).count()
+    pending_tasks = total_tasks - completed_tasks
+    overdue_tasks = user_tasks.filter(
+        due_date__lt=timezone.now(),
+        completed=False
+    ).count()
+
+    # Completion rate
+    completion_rate = (completed_tasks / total_tasks * 100) if total_tasks > 0 else 0
+
+    # Tasks by priority
+    priority_stats = {
+        'low': user_tasks.filter(priority='low').count(),
+        'medium': user_tasks.filter(priority='medium').count(),
+        'high': user_tasks.filter(priority='high').count(),
+        'urgent': user_tasks.filter(priority='urgent').count(),
+    }
+
+    # Tasks by category
+    category_stats = {}
+    for value, label in Task.CATEGORY_CHOICES:
+        category_stats[label] = user_tasks.filter(category=value).count()
+
+    # Tasks completed in last 7 days
+    seven_days_ago = timezone.now() - timedelta(days=7)
+    recent_completions = user_tasks.filter(
+        completed=True,
+        updated_at__gte=seven_days_ago
+    ).annotate(
+        date=TruncDate('updated_at')
+    ).values('date').annotate(
+        count=Count('id')
+    ).order_by('date')
+
+    # Prepare data for chart (last 7 days)
+    daily_completions = {}
+    for i in range(7):
+        date = (timezone.now() - timedelta(days=i)).date()
+        daily_completions[date.strftime('%Y-%m-%d')] = 0
+
+    for item in recent_completions:
+        date_str = item['date'].strftime('%Y-%m-%d')
+        if date_str in daily_completions:
+            daily_completions[date_str] = item['count']
+
+    context = {
+        'total_tasks': total_tasks,
+        'completed_tasks': completed_tasks,
+        'pending_tasks': pending_tasks,
+        'overdue_tasks': overdue_tasks,
+        'completion_rate': round(completion_rate, 1),
+        'priority_stats': priority_stats,
+        'category_stats': category_stats,
+        'daily_completions': daily_completions,
+    }
+
+    return render(request, 'tasks/statistics.html', context)
