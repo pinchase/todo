@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from .models import Task, EmailVerification
+from .models import Task, EmailVerification, Subtask
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -374,3 +374,45 @@ def statistics_view(request):
     }
 
     return render(request, 'tasks/statistics.html', context)
+
+
+@login_required
+def add_subtask_view(request, task_id):
+    """Add subtask via AJAX"""
+    if request.method == 'POST':
+        task = get_object_or_404(Task, id=task_id, user=request.user)
+        title = request.POST.get('title', '').strip()
+
+        if title:
+            subtask = Subtask.objects.create(
+                task=task,
+                title=title,
+                order=task.subtasks.count()
+            )
+            return JsonResponse({
+                'success': True,
+                'subtask': {
+                    'id': subtask.id,
+                    'title': subtask.title,
+                    'completed': subtask.completed
+                }
+            })
+
+    return JsonResponse({'success': False})
+
+
+@login_required
+def toggle_subtask_view(request, subtask_id):
+    """Toggle subtask completion"""
+    subtask = get_object_or_404(Subtask, id=subtask_id, task__user=request.user)
+    subtask.completed = not subtask.completed
+    subtask.save()
+    return JsonResponse({'success': True, 'completed': subtask.completed})
+
+
+@login_required
+def delete_subtask_view(request, subtask_id):
+    """Delete subtask"""
+    subtask = get_object_or_404(Subtask, id=subtask_id, task__user=request.user)
+    subtask.delete()
+    return JsonResponse({'success': True})

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Task, EmailVerification
+from .models import Task, EmailVerification, Subtask
 from django.utils.html import format_html
 
 
@@ -92,3 +92,13 @@ class EmailVerificationAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
+
+
+
+@admin.register(Subtask)
+class SubtaskAdmin(admin.ModelAdmin):
+    list_display = ('title', 'task', 'completed', 'created_at')
+    list_filter = ('completed', 'created_at')
+    search_fields = ('title', 'task__title')
+    list_editable = ('completed',)

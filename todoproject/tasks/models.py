@@ -108,3 +108,17 @@ class EmailVerification(models.Model):
     class Meta:
         verbose_name = 'Email Verification'
         verbose_name_plural = 'Email Verifications'
+
+
+class Subtask(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='subtasks')
+    title = models.CharField(max_length=200)
+    completed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    order = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.task.title} - {self.title}"
+
+    class Meta:
+        ordering = ['order', 'created_at']

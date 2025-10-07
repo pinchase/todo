@@ -25,5 +25,11 @@ urlpatterns = [
 
      path('test-email/', views.test_email_view, name='test_email'),
 
-    path('statistics/', views.statistics_view, name='statistics')
+    path('statistics/', views.statistics_view, name='statistics'),
+
+# Subtasks
+    path('subtask/add/<int:task_id>/', views.add_subtask_view, name='add_subtask'),
+    path('subtask/toggle/<int:subtask_id>/', views.toggle_subtask_view, name='toggle_subtask'),
+    path('subtask/delete/<int:subtask_id>/', views.delete_subtask_view, name='delete_subtask'),
+
 ]

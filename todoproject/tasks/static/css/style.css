@@ -1040,3 +1040,116 @@ input[type="datetime-local"] {
         grid-template-columns: 1fr;
     }
 }
+/* Subtasks Section */
+.subtasks-section {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--background);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.subtasks-progress {
+    margin-bottom: 0.75rem;
+}
+
+.subtasks-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.subtasks-progress-bar {
+    height: 6px;
+    background: var(--border-color);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.subtasks-progress-fill {
+    height: 100%;
+    background: var(--success-color);
+    transition: width 0.3s ease;
+}
+
+.subtasks-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.subtask-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.subtask-item:hover {
+    background: var(--card-background);
+}
+
+.subtask-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.subtask-item span {
+    flex: 1;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.subtask-item.completed span {
+    text-decoration: line-through;
+    color: var(--text-secondary);
+}
+
+.subtask-delete {
+    background: none;
+    border: none;
+    color: var(--danger-color);
+    cursor: pointer;
+    font-size: 1.5rem;
+    line-height: 1;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.subtask-delete:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.add-subtask-form {
+    margin-top: 0.75rem;
+}
+
+.subtask-input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 0.875rem;
+    background: var(--card-background);
+    color: var(--text-primary);
+    transition: border-color 0.3s;
+}
+
+.subtask-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.subtask-input::placeholder {
+    color: var(--text-secondary);
+}

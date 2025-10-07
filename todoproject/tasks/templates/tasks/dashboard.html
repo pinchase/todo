@@ -91,10 +91,7 @@
         {% if tasks %}
             <div class="tasks-list" id="tasksList">
                 {% for task in tasks %}
-                <div class="task-card
-                            {% if task.completed %}completed
-                            {% elif task.is_overdue and not task.completed %}overdue
-                            {% endif %}"
+                <div class="task-card {% if task.completed %}completed{% endif %}"
                      data-task-id="{{ task.id }}"
                      data-priority="{{ task.priority }}"
                      data-category="{{ task.category }}"
@@ -125,8 +122,38 @@
                                 <p class="task-description">{{ task.description }}</p>
                             {% endif %}
 
+
+                          <!-- Subtasks Section -->
+                            {% if task.subtasks.all %}
+                            <div class="subtasks-section">
+                                <div class="subtasks-progress">
+                                    {% with completed=task.subtasks.filter.completed.count total=task.subtasks.count %}
+                                    <span class="subtasks-label">
+                                        Subtasks: {{ completed }}/{{ total }}
+                                    </span>
+                                    <div class="subtasks-progress-bar">
+                                        {% if total > 0 %}
+                                            {% widthratio completed total 100 as progress %}
+                                            <div class="subtasks-progress-fill" style="width: {{ progress }}%"></div>
+                                        {% else %}
+                                            <div class="subtasks-progress-fill" style="width: 0%"></div>
+                                        {% endif %}
+                                    </div>
+                                    {% endwith %}
+                                </div>
+                            {% endif %}
+
+                            <!-- Add Subtask Form -->
+                            <div class="add-subtask-form">
+                                <input type="text"
+                                       class="subtask-input"
+                                       placeholder="+ Add subtask..."
+                                       id="subtask-input-{{ task.id }}"
+                                       onkeypress="handleSubtaskEnter(event, {{ task.id }})">
+                            </div>
+
                             <div class="task-meta">
-                                <span class="task-date">Created: {{ task.created_at|date:"M d, Y g:i A" }}</span>
+                                <span class="task-date">Created: {{ task.created_at|date:"M d, Y" }}</span>
 
                                 {% if task.due_date %}
                                     <span class="due-date {% if task.is_overdue and not task.completed %}overdue{% endif %}">
@@ -142,8 +169,12 @@
                     </div>
 
                     <div class="task-actions">
-                        <a href="{% url 'edit_task' task.id %}" class="btn-icon" title="Edit">✏️</a>
-                        <button onclick="deleteTask({{ task.id }})" class="btn-icon" title="Delete">🗑️</button>
+                        <a href="{% url 'edit_task' task.id %}" class="btn-icon" title="Edit">
+                            ✏️
+                        </a>
+                        <button onclick="deleteTask({{ task.id }})" class="btn-icon" title="Delete">
+                            🗑️
+                        </button>
                     </div>
                 </div>
                 {% endfor %}
@@ -239,6 +270,68 @@
                 searchResults.textContent = `${visibleCount} task${visibleCount !== 1 ? 's' : ''} found`;
             } else {
                 searchResults.textContent = '';
+            }
+        });
+    }
+
+    // Subtask functions
+    function handleSubtaskEnter(event, taskId) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            addSubtask(taskId);
+        }
+    }
+
+    function addSubtask(taskId) {
+        const input = document.getElementById(`subtask-input-${taskId}`);
+        const title = input.value.trim();
+
+        if (!title) return;
+
+        fetch(`/subtask/add/${taskId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: `title=${encodeURIComponent(title)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+
+    function toggleSubtask(subtaskId) {
+        fetch(`/subtask/toggle/${subtaskId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+
+    function deleteSubtask(subtaskId) {
+        if (!confirm('Delete this subtask?')) return;
+
+        fetch(`/subtask/delete/${subtaskId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
             }
         });
     }
