@@ -809,6 +809,7 @@ textarea:focus {
     .filter-group {
         flex-direction: column;
         align-items: flex-start;
+
     }
 
     .filter-group label {
